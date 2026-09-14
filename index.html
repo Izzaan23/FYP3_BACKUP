@@ -1938,8 +1938,9 @@ body.dark .complaint-status{background:#1c3528;}
     <div class="area-comparison panel" id="areaComparison" aria-live="polite">
         <div class="area-comparison-head">
             <div>
-                <div class="panel-title" id="areaComparisonTitle">PERBANDINGAN KES MENGIKUT KAWASAN</div>
-                <div class="page-subtitle" id="areaComparisonSubtitle">Perbandingan jumlah kes bagi tahun 2025</div>
+                <div class="panel-title" id="housingTotalTitle">JUMLAH KES PERUMAHAN</div>
+                <div class="housing-total"><strong id="housingTotalCases">434</strong> <span class="area-case-unit">kes</span></div>
+                <div class="page-subtitle" id="areaComparisonSubtitle">Kes mengikut kawasan bagi tahun 2025</div>
             </div>
             <span class="year-badge" id="areaComparisonYear">2025</span>
         </div>
@@ -1949,14 +1950,12 @@ body.dark .complaint-status{background:#1c3528;}
                 <strong id="ipohBaratCases">245</strong>
                 <small class="area-case-unit">kes</small>
             </article>
-            <div class="area-versus">VS</div>
-            <article class="area-card area-card-timur">
-                <span class="area-name">Ipoh Timur</span>
-                <strong id="ipohTimurCases">372</strong>
+            <article class="area-card area-card-selatan">
+                <span class="area-name">Ipoh Selatan</span>
+                <strong id="ipohSelatanCases">372</strong>
                 <small class="area-case-unit">kes</small>
             </article>
         </div>
-        <div class="area-difference" id="areaDifference">Ipoh Timur mencatat 127 kes lebih tinggi daripada Ipoh Barat.</div>
     </div>
 
     <div class="map-page-container" id="mapPageHost">
@@ -3272,16 +3271,16 @@ body.dark .map-case-label span{color:#67c2ff;}
 
 .area-comparison{margin-bottom:16px;padding:16px;overflow:visible;}
 .area-comparison-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px;}
-.area-comparison-grid{display:grid;grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr);align-items:center;gap:10px;}
+.area-comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;gap:12px;}
+.housing-total{display:flex;align-items:baseline;gap:6px;margin-top:5px;color:#1687c9;}
+.housing-total strong{font-size:31px;line-height:1;}
+.housing-total span{font-size:12px;font-weight:700;}
 .area-card{border-radius:10px;padding:13px 16px;color:#fff;display:grid;grid-template-columns:1fr auto;align-items:end;gap:2px 10px;}
 .area-card-barat{background:linear-gradient(135deg,#0e6597,#1687c9);}
-.area-card-timur{background:linear-gradient(135deg,#8d3e68,#c4517f);}
+.area-card-selatan{background:linear-gradient(135deg,#8d3e68,#c4517f);}
 .area-name{grid-column:1 / -1;font-size:12px;font-weight:700;opacity:.94;}
 .area-card strong{font-size:28px;line-height:1;margin-top:5px;}
 .area-card small{font-size:11px;opacity:.9;}
-.area-versus{text-align:center;font-size:11px;font-weight:900;color:var(--muted);}
-.area-difference{margin-top:11px;padding:9px 11px;border-radius:8px;background:#eef7fb;color:#24536d;font-size:12px;font-weight:600;text-align:center;}
-body.dark .area-difference{background:#203744;color:#c9e7f7;}
 @media(max-width:600px){.area-comparison-grid{grid-template-columns:1fr}.area-versus{display:none}.area-card strong{font-size:24px}}
 </style>
 
@@ -3360,10 +3359,10 @@ body.dark .year-badge{
         ]
     };
 
-    /* Jumlah sebenar mengikut medan SEMPADAN dalam fail 2025 dan 2026. */
+    /* Nilai kawasan daripada fail; rekod IPOH TIMUR dipaparkan sebagai IPOH SELATAN mengikut pilihan pengguna. */
     window.WEBGIS_AREA_DATA = {
-        "2025": {barat:245, timur:372},
-        "2026": {barat:57, timur:71}
+        "2025": {barat:245, selatan:372},
+        "2026": {barat:57, selatan:71}
     };
 
     const monthOrder=["JANUARI","FEBRUARI","MAC","APRIL","MEI","JUN","JULAI","OGOS","SEPTEMBER","OKTOBER","NOVEMBER","DISEMBER"];
@@ -3453,11 +3452,11 @@ body.dark .year-badge{
 
     function selectedAreaTotals(){
         const y=currentYear();
-        if(y!=="all") return WEBGIS_AREA_DATA[y] || {barat:0,timur:0};
+        if(y!=="all") return WEBGIS_AREA_DATA[y] || {barat:0,selatan:0};
         return Object.values(WEBGIS_AREA_DATA).reduce((sum,row)=>({
             barat:sum.barat+row.barat,
-            timur:sum.timur+row.timur
-        }),{barat:0,timur:0});
+            selatan:sum.selatan+row.selatan
+        }),{barat:0,selatan:0});
     }
 
     function updateAreaComparison(){
@@ -3465,35 +3464,25 @@ body.dark .year-badge{
         const y=currentYear()==="all"?"2025 + 2026":currentYear();
         const lang=document.documentElement.lang||"ms";
         const copy={
-            ms:{title:"PERBANDINGAN KES MENGIKUT KAWASAN",subtitle:"Perbandingan jumlah kes bagi tahun ",unit:"kes",higher:" mencatat {n} kes lebih tinggi daripada ",equal:"Kedua-dua kawasan mencatat jumlah kes yang sama."},
-            en:{title:"CASE COMPARISON BY AREA",subtitle:"Comparison of total cases for ",unit:"cases",higher:" recorded {n} more cases than ",equal:"Both areas recorded the same number of cases."},
-            zh:{title:"各地区案件比较",subtitle:"案件总数比较：",unit:"宗案件",higher:"比{other}多 {n} 宗案件。",equal:"两个地区的案件总数相同。"}
+            ms:{title:"JUMLAH KES PERUMAHAN",subtitle:"Kes mengikut kawasan bagi tahun ",unit:"kes"},
+            en:{title:"TOTAL HOUSING CASES",subtitle:"Cases by area for ",unit:"cases"},
+            zh:{title:"住宅案件总数",subtitle:"各地区案件：",unit:"宗案件"}
         }[lang]||null;
         const text=copy||{
-            title:"PERBANDINGAN KES MENGIKUT KAWASAN",subtitle:"Perbandingan jumlah kes bagi tahun ",unit:"kes",higher:" mencatat {n} kes lebih tinggi daripada ",equal:"Kedua-dua kawasan mencatat jumlah kes yang sama."
+            title:"JUMLAH KES PERUMAHAN",subtitle:"Kes mengikut kawasan bagi tahun ",unit:"kes"
         };
-        const west=document.getElementById("ipohBaratCases"), east=document.getElementById("ipohTimurCases");
+        const west=document.getElementById("ipohBaratCases"), south=document.getElementById("ipohSelatanCases");
         if(west) west.textContent=data.barat;
-        if(east) east.textContent=data.timur;
-        const title=document.getElementById("areaComparisonTitle");
+        if(south) south.textContent=data.selatan;
+        const title=document.getElementById("housingTotalTitle");
+        const housingTotal=document.getElementById("housingTotalCases");
         const subtitle=document.getElementById("areaComparisonSubtitle");
         const badge=document.getElementById("areaComparisonYear");
         if(title) title.textContent=text.title;
+        if(housingTotal) housingTotal.textContent=selectedTotals().rumah;
         if(subtitle) subtitle.textContent=text.subtitle+y;
         if(badge) badge.textContent=y;
         document.querySelectorAll(".area-case-unit").forEach(el=>el.textContent=text.unit);
-        const diff=document.getElementById("areaDifference");
-        if(diff){
-            if(data.barat===data.timur) diff.textContent=text.equal;
-            else {
-                const high=data.barat>data.timur?"Ipoh Barat":"Ipoh Timur";
-                const low=data.barat>data.timur?"Ipoh Timur":"Ipoh Barat";
-                const n=Math.abs(data.barat-data.timur);
-                diff.textContent=lang==="zh"
-                    ? high+text.higher.replace("{other}",low).replace("{n}",n)
-                    : high+text.higher.replace("{n}",n)+low+".";
-            }
-        }
     }
 
     function updateYearLabels(){
