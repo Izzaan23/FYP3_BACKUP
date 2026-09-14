@@ -1010,6 +1010,12 @@ body.dark .stat-card{
 
 body.dark .data-table th{
     background:#202f3a;
+    color:#dce6ec;
+}
+
+body.dark .data-table td{
+    color:#e8eef2;
+    border-bottom-color:#2b3b47;
 }
 
 body.dark .data-table tr:hover td{
@@ -1028,6 +1034,24 @@ body.dark .settings .close-settings{
 
 body.dark .setting-row{
     border-color:#293844;
+}
+
+body.dark .setting-section h4,
+body.dark .info-step p,
+body.dark .complaint-status span,
+body.dark .form-group small{
+    color:#aebbc4;
+}
+
+body.dark .setting-row button{
+    background:#253b49;
+    color:#79c9f4;
+}
+
+body.dark .stat-icon,
+body.dark .info-number{
+    background:#203847;
+    color:#71c7f4;
 }
 
 body.dark .donut::after{
@@ -2448,7 +2472,7 @@ body.dark .complaint-status{background:#1c3528;}
                     Kawalan Layer
                 </span>
 
-                <button onclick="showNotification('Kawalan layer QGIS2Web tersedia pada peta')" data-i18n="open">Buka</button>
+                <button onclick="openLayerControl()" data-i18n="open">Buka</button>
 
             </div>
 
@@ -2509,6 +2533,7 @@ body.dark .complaint-status{background:#1c3528;}
 ===================================================== -->
 
 <script src="resources/qgis2web_expressions.js"></script>
+<script>
 window.addEventListener("DOMContentLoaded",function(){
     changeLanguage(localStorage.getItem("webgis-language") || "ms");
     setTimeout(function(){ moveMapContainer("dashboard"); },100);
@@ -2920,6 +2945,30 @@ function resetMap(){
 
     }
 
+}
+
+/* =====================================================
+   OPEN QGIS2WEB LAYER CONTROL
+===================================================== */
+function openLayerControl(){
+    closeSettings();
+    showPageById("map-page");
+
+    setTimeout(function(){
+        if(typeof map !== "undefined" && map){
+            map.updateSize();
+        }
+
+        const layerButton = document.querySelector(
+            ".layer-switcher button, .ol-layerswitcher button"
+        );
+
+        if(layerButton){
+            layerButton.click();
+        }else{
+            showNotification("Kawalan layer tersedia pada bahagian peta");
+        }
+    },350);
 }
 
 
