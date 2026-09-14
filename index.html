@@ -2038,28 +2038,46 @@ body.dark .complaint-status{background:#1c3528;}
 
         <div class="stat-card">
             <div class="stat-label">RUMAH</div>
-            <div class="stat-number">648</div>
-            <div class="stat-label">90.3%</div>
+            <div class="stat-number">434</div>
+            <div class="stat-label">70.3%</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-label">KEDAI</div>
-            <div class="stat-number">130</div>
-            <div class="stat-label">18.1%</div>
+            <div class="stat-number">65</div>
+            <div class="stat-label">10.5%</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-label">MASJID/SURAU/TOKONG</div>
-            <div class="stat-number">9</div>
-            <div class="stat-label">1.3%</div>
+            <div class="stat-number">6</div>
+            <div class="stat-label">1.0%</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-label">LAIN-LAIN</div>
-            <div class="stat-number">53</div>
-            <div class="stat-label">7.4%</div>
+            <div class="stat-number">112</div>
+            <div class="stat-label">18.2%</div>
         </div>
 
+    </div>
+
+    <div class="panel premise-chart-panel">
+        <div class="panel-header">
+            <div>
+                <div class="panel-title" id="premisePieTitle">CARTA PAI JENIS PREMIS</div>
+                <div class="page-subtitle" id="premisePieSubtitle">Pecahan kes mengikut kategori premis bagi tahun 2025</div>
+            </div>
+            <span class="year-badge" id="premisePieYear">2025</span>
+        </div>
+        <div class="premise-chart-body">
+            <div class="premise-pie-wrap">
+                <div class="premise-pie" id="premisePie" role="img" aria-label="Carta pai jenis premis">
+                    <div class="premise-pie-center"><strong id="premisePieTotal">617</strong><span>Jumlah Kes</span></div>
+                </div>
+            </div>
+            <div class="premise-pie-legend" id="premisePieLegend"></div>
+        </div>
     </div>
 
 </section>
@@ -3282,6 +3300,22 @@ body.dark .map-case-label span{color:#67c2ff;}
 .area-card strong{font-size:28px;line-height:1;margin-top:5px;}
 .area-card small{font-size:11px;opacity:.9;}
 @media(max-width:600px){.area-comparison-grid{grid-template-columns:1fr}.area-versus{display:none}.area-card strong{font-size:24px}}
+
+.premise-chart-panel{margin-top:18px;}
+.premise-chart-body{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(300px,1.2fr);align-items:center;gap:26px;padding:26px;min-height:330px;}
+.premise-pie-wrap{display:flex;align-items:center;justify-content:center;}
+.premise-pie{width:245px;height:245px;border-radius:50%;position:relative;background:conic-gradient(#2586c1 0 70.3%,#e8a23a 70.3% 80.9%,#55a868 80.9% 81.9%,#c64e4e 81.9% 100%);box-shadow:0 10px 28px rgba(17,42,61,.14);transition:background .35s ease;}
+.premise-pie::after{content:"";position:absolute;inset:58px;border-radius:50%;background:var(--card);}
+.premise-pie-center{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.premise-pie-center strong{font-size:29px;line-height:1;color:var(--text);}
+.premise-pie-center span{margin-top:6px;font-size:11px;color:var(--muted);font-weight:700;}
+.premise-pie-legend{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.premise-pie-item{display:grid;grid-template-columns:12px 1fr auto;align-items:center;gap:9px;padding:13px;border:1px solid var(--border);border-radius:10px;background:var(--card);}
+.premise-pie-swatch{width:11px;height:11px;border-radius:50%;}
+.premise-pie-label{font-size:11px;font-weight:700;color:var(--text);}
+.premise-pie-value{text-align:right;font-size:12px;color:var(--muted);}
+.premise-pie-value strong{display:block;font-size:17px;color:var(--text);}
+@media(max-width:750px){.premise-chart-body{grid-template-columns:1fr}.premise-pie-legend{grid-template-columns:1fr}.premise-pie{width:210px;height:210px}.premise-pie::after{inset:50px}}
 </style>
 
 <style>
@@ -3580,6 +3614,42 @@ body.dark .year-badge{
             const ls=card.querySelectorAll(".stat-label")[1];
             if(ls) ls.textContent=(vals[i][1]/total*100).toFixed(1)+"%";
         });
+
+        const pie=document.getElementById("premisePie");
+        const pieTotal=document.getElementById("premisePieTotal");
+        const legend=document.getElementById("premisePieLegend");
+        const year=currentYear()==="all"?"2025 + 2026":currentYear();
+        const lang=document.documentElement.lang||"ms";
+        const words={
+            ms:{title:"CARTA PAI JENIS PREMIS",subtitle:"Pecahan kes mengikut kategori premis bagi tahun ",total:"Jumlah Kes",labels:["Rumah","Kedai","Masjid/Surau/Tokong","Lain-lain"]},
+            en:{title:"PREMISE TYPE PIE CHART",subtitle:"Breakdown of cases by premise category for ",total:"Total Cases",labels:["House","Shop","Mosque/Prayer Hall/Temple","Others"]},
+            zh:{title:"场所类型饼图",subtitle:"各场所类别案件分布：",total:"案件总数",labels:["住宅","商店","清真寺/祈祷室/寺庙","其他"]}
+        }[lang]||null;
+        const text=words||{title:"CARTA PAI JENIS PREMIS",subtitle:"Pecahan kes mengikut kategori premis bagi tahun ",total:"Jumlah Kes",labels:["Rumah","Kedai","Masjid/Surau/Tokong","Lain-lain"]};
+        const numbers=[t.rumah,t.kedai,t.masjid,t.lain];
+        const colors=["#2586c1","#e8a23a","#55a868","#c64e4e"];
+        let cursor=0;
+        const stops=numbers.map((value,i)=>{
+            const start=cursor;
+            cursor+=value/total*100;
+            return `${colors[i]} ${start}% ${cursor}%`;
+        });
+        if(pie){
+            pie.style.background=`conic-gradient(${stops.join(",")})`;
+            pie.setAttribute("aria-label",text.title+": "+year);
+        }
+        if(pieTotal) pieTotal.textContent=selectedTotal();
+        const centerLabel=document.querySelector("#jenis-page .premise-pie-center span");
+        if(centerLabel) centerLabel.textContent=text.total;
+        const title=document.getElementById("premisePieTitle");
+        const subtitle=document.getElementById("premisePieSubtitle");
+        const badge=document.getElementById("premisePieYear");
+        if(title) title.textContent=text.title;
+        if(subtitle) subtitle.textContent=text.subtitle+year;
+        if(badge) badge.textContent=year;
+        if(legend){
+            legend.innerHTML=numbers.map((value,i)=>`<div class="premise-pie-item"><span class="premise-pie-swatch" style="background:${colors[i]}"></span><span class="premise-pie-label">${text.labels[i]}</span><span class="premise-pie-value"><strong>${value}</strong>${(value/total*100).toFixed(1)}%</span></div>`).join("");
+        }
     }
 
     function updateReport(){
