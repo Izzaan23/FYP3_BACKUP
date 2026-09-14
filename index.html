@@ -1950,13 +1950,13 @@ body.dark .complaint-status{background:#1c3528;}
                 <small class="area-case-unit">kes</small>
             </article>
             <div class="area-versus">VS</div>
-            <article class="area-card area-card-selatan">
-                <span class="area-name">Ipoh Selatan</span>
-                <strong id="ipohSelatanCases">340</strong>
+            <article class="area-card area-card-timur">
+                <span class="area-name">Ipoh Timur</span>
+                <strong id="ipohTimurCases">372</strong>
                 <small class="area-case-unit">kes</small>
             </article>
         </div>
-        <div class="area-difference" id="areaDifference">Ipoh Barat mencatat 38 kes lebih tinggi daripada Ipoh Selatan.</div>
+        <div class="area-difference" id="areaDifference">Ipoh Timur mencatat 127 kes lebih tinggi daripada Ipoh Barat.</div>
     </div>
 
     <div class="map-page-container" id="mapPageHost">
@@ -3275,7 +3275,7 @@ body.dark .map-case-label span{color:#67c2ff;}
 .area-comparison-grid{display:grid;grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr);align-items:center;gap:10px;}
 .area-card{border-radius:10px;padding:13px 16px;color:#fff;display:grid;grid-template-columns:1fr auto;align-items:end;gap:2px 10px;}
 .area-card-barat{background:linear-gradient(135deg,#0e6597,#1687c9);}
-.area-card-selatan{background:linear-gradient(135deg,#8d3e68,#c4517f);}
+.area-card-timur{background:linear-gradient(135deg,#8d3e68,#c4517f);}
 .area-name{grid-column:1 / -1;font-size:12px;font-weight:700;opacity:.94;}
 .area-card strong{font-size:28px;line-height:1;margin-top:5px;}
 .area-card small{font-size:11px;opacity:.9;}
@@ -3360,10 +3360,10 @@ body.dark .year-badge{
         ]
     };
 
-    /* Jumlah kes yang disahkan daripada layer kawasan. */
+    /* Jumlah sebenar mengikut medan SEMPADAN dalam fail 2025 dan 2026. */
     window.WEBGIS_AREA_DATA = {
-        "2025": {barat:378, selatan:340},
-        "2026": {barat:57, selatan:71}
+        "2025": {barat:245, timur:372},
+        "2026": {barat:57, timur:71}
     };
 
     const monthOrder=["JANUARI","FEBRUARI","MAC","APRIL","MEI","JUN","JULAI","OGOS","SEPTEMBER","OKTOBER","NOVEMBER","DISEMBER"];
@@ -3453,11 +3453,11 @@ body.dark .year-badge{
 
     function selectedAreaTotals(){
         const y=currentYear();
-        if(y!=="all") return WEBGIS_AREA_DATA[y] || {barat:0,selatan:0};
+        if(y!=="all") return WEBGIS_AREA_DATA[y] || {barat:0,timur:0};
         return Object.values(WEBGIS_AREA_DATA).reduce((sum,row)=>({
             barat:sum.barat+row.barat,
-            selatan:sum.selatan+row.selatan
-        }),{barat:0,selatan:0});
+            timur:sum.timur+row.timur
+        }),{barat:0,timur:0});
     }
 
     function updateAreaComparison(){
@@ -3472,9 +3472,9 @@ body.dark .year-badge{
         const text=copy||{
             title:"PERBANDINGAN KES MENGIKUT KAWASAN",subtitle:"Perbandingan jumlah kes bagi tahun ",unit:"kes",higher:" mencatat {n} kes lebih tinggi daripada ",equal:"Kedua-dua kawasan mencatat jumlah kes yang sama."
         };
-        const west=document.getElementById("ipohBaratCases"), south=document.getElementById("ipohSelatanCases");
+        const west=document.getElementById("ipohBaratCases"), east=document.getElementById("ipohTimurCases");
         if(west) west.textContent=data.barat;
-        if(south) south.textContent=data.selatan;
+        if(east) east.textContent=data.timur;
         const title=document.getElementById("areaComparisonTitle");
         const subtitle=document.getElementById("areaComparisonSubtitle");
         const badge=document.getElementById("areaComparisonYear");
@@ -3484,11 +3484,11 @@ body.dark .year-badge{
         document.querySelectorAll(".area-case-unit").forEach(el=>el.textContent=text.unit);
         const diff=document.getElementById("areaDifference");
         if(diff){
-            if(data.barat===data.selatan) diff.textContent=text.equal;
+            if(data.barat===data.timur) diff.textContent=text.equal;
             else {
-                const high=data.barat>data.selatan?"Ipoh Barat":"Ipoh Selatan";
-                const low=data.barat>data.selatan?"Ipoh Selatan":"Ipoh Barat";
-                const n=Math.abs(data.barat-data.selatan);
+                const high=data.barat>data.timur?"Ipoh Barat":"Ipoh Timur";
+                const low=data.barat>data.timur?"Ipoh Timur":"Ipoh Barat";
+                const n=Math.abs(data.barat-data.timur);
                 diff.textContent=lang==="zh"
                     ? high+text.higher.replace("{other}",low).replace("{n}",n)
                     : high+text.higher.replace("{n}",n)+low+".";
